@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tester Feedback - ClankSkip</title>
+  <meta name="description" content="Feedback form for ClankSkip testers.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../style.css?v=3">
+</head>
+<body>
+  <main>
+    <header>
+      <img src="../icon.svg" alt="">
+      <a href="../">ClankSkip</a>
+    </header>
+
+    <h1>Tester feedback</h1>
+    <p class="lead">
+      Thanks for testing ClankSkip! This takes about two minutes. Every question is
+      optional, so answer whatever you can.
+    </p>
+
+    <form id="feedback" action="https://formspree.io/f/xvkgadvo" method="POST">
+      <input type="hidden" name="_subject" value="ClankSkip tester feedback">
+      <input type="text" name="_gotcha" class="hidden" tabindex="-1" autocomplete="off">
+
+      <fieldset>
+        <legend>Which music apps do you use ClankSkip with?</legend>
+        <label><input type="checkbox" name="apps" value="Spotify"> Spotify</label>
+        <label><input type="checkbox" name="apps" value="YouTube Music"> YouTube Music</label>
+        <label><input type="checkbox" name="apps" value="YouTube"> YouTube</label>
+        <label><input type="checkbox" name="apps" value="Deezer"> Deezer</label>
+        <label><input type="checkbox" name="apps" value="Tidal"> Tidal</label>
+        <label><input type="checkbox" name="apps" value="Apple Music"> Apple Music</label>
+        <label><input type="checkbox" name="apps" value="SoundCloud"> SoundCloud</label>
+        <label><input type="checkbox" name="apps" value="Other"> Other</label>
+      </fieldset>
+
+      <label class="field">
+        What phone do you have?
+        <input type="text" name="phone" placeholder="e.g. Samsung Galaxy S24, Pixel 8">
+      </label>
+
+      <fieldset>
+        <legend>Is it skipping AI songs for you?</legend>
+        <label><input type="radio" name="skipping" value="Yes"> Yes</label>
+        <label><input type="radio" name="skipping" value="Sometimes"> Sometimes</label>
+        <label><input type="radio" name="skipping" value="No"> No</label>
+        <label><input type="radio" name="skipping" value="Haven't noticed any yet"> Haven't noticed any yet</label>
+      </fieldset>
+
+      <label class="field">
+        Has it skipped anything that wasn't AI? If so, which artist or song?
+        <textarea name="false_positives" rows="3"></textarea>
+      </label>
+
+      <fieldset>
+        <legend>Did skipping ever stop working until you opened the app again?</legend>
+        <label><input type="radio" name="stopped_working" value="Yes"> Yes</label>
+        <label><input type="radio" name="stopped_working" value="No"> No</label>
+        <label><input type="radio" name="stopped_working" value="Not sure"> Not sure</label>
+      </fieldset>
+
+      <fieldset>
+        <legend>How was setup (notification access and battery settings)?</legend>
+        <label><input type="radio" name="setup" value="Easy"> Easy</label>
+        <label><input type="radio" name="setup" value="A bit confusing"> A bit confusing</label>
+        <label><input type="radio" name="setup" value="Hard"> Hard</label>
+      </fieldset>
+
+      <label class="field">
+        Anything confusing, broken or missing?
+        <textarea name="comments" rows="4"></textarea>
+      </label>
+
+      <fieldset>
+        <legend>How likely are you to keep using it?</legend>
+        <div class="scale">
+          <span>Not likely</span>
+          <label><input type="radio" name="keep_using" value="1"> 1</label>
+          <label><input type="radio" name="keep_using" value="2"> 2</label>
+          <label><input type="radio" name="keep_using" value="3"> 3</label>
+          <label><input type="radio" name="keep_using" value="4"> 4</label>
+          <label><input type="radio" name="keep_using" value="5"> 5</label>
+          <span>Very likely</span>
+        </div>
+      </fieldset>
+
+      <label class="field">
+        Your email, if you're OK with follow-up questions
+        <input type="email" name="email" placeholder="you@example.com">
+      </label>
+
+      <p class="note">
+        Your answers are only used to improve ClankSkip and aren't shared with anyone.
+        The form is handled by <a href="https://formspree.io/legal/privacy-policy">Formspree</a>.
+      </p>
+
+      <button type="submit" class="button">Send feedback</button>
+      <p id="status" class="note" role="status"></p>
+    </form>
+  </main>
+
+  <footer>
+    <p><a href="../">Home</a></p>
+  </footer>
+
+  <script>
+    // Submit in the background so people stay on the page and see a thank you.
+    const form = document.getElementById("feedback");
+    const status = document.getElementById("status");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = form.querySelector("button");
+      button.disabled = true;
+      status.textContent = "Sending...";
+
+      // Join multiple checked apps into one answer, e.g. "Spotify, YouTube Music".
+      const data = {};
+      for (const [key, value] of new FormData(form)) {
+        data[key] = key in data ? data[key] + ", " + value : value;
+      }
+
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          body: JSON.stringify(data),
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+        });
+        if (!response.ok) throw new Error();
+        form.innerHTML = "<h2>Thanks!</h2><p>Your feedback was sent. It really helps.</p>";
+      } catch {
+        status.textContent = "Something went wrong. Please try again, or email contact@clankskip.com.";
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
